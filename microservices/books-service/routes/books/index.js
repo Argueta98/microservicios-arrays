@@ -62,6 +62,68 @@ router.get("/author/:id", async (req, res) => {
   }
 });
 
+
+router.get("/distributedCountries/:country", (req, res) => {
+  const country = req.params.country;
+  // Filtramos los libros que tienen al país en su propiedad "distributedCountries"
+  const books = data.dataLibrary.books.filter((book) =>
+    book.distributedCountries.includes(country)
+  );
+  // Si no se encuentra ningún libro, devolvemos un error 404
+  if (books.length === 0) {
+    return res
+      .status(404)
+      .send({ error: `No se encontró ningún libro distribuido en ${country}` });
+  }
+  // Si se encuentra algún libro, creamos una respuesta que incluye el nombre del país y la lista de libros
+  const response = {
+    country: country,
+    books :books.map((book)=>({title:book.title}))
+    
+   // books: books
+  };
+  // Registramos un mensaje en la consola
+  logger(`Get books by country: ${country}`);
+  // Enviamos la respuesta al cliente
+  return res.send(response);
+});
+
+
+
+
+//Buscar autores por pais
+/*router.get("/authors-by-country/:country", async (req, res) => {
+  const country = req.params.country;
+  try {
+    // Hacemos una petición al servidor de autores
+    const response = await fetch(`http://authors:3000/api/v2/authors/country/${country}`);
+    const authors = await response.json();
+
+    // Filtramos los autores por el país indicado
+    const authorsInCountry = authors.filter(author => author.country.toLowerCase() === country.toLowerCase());
+
+    // Si no se encontró ningún autor, devolvemos un error 404
+    if (authorsInCountry.length === 0) {
+      return res.status(404).send({ error: `No se encontró ningún autor nacido en ${country}` });
+    }
+
+    // Creamos una respuesta que incluye el nombre del país y los nombres de los autores nacidos en ese país.
+    const responseObj = {
+      country: country,
+      authors: authorsInCountry.map(author => author.name)
+    };
+
+    // Registramos un mensaje en la consola
+    logger(`Get authors by country: ${country}`);
+
+    // Enviamos la respuesta al cliente
+    return res.send(responseObj);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Error al buscar autores por país");
+  }
+});*/
+
 //Busqueda Entre anios 
 router.get("/between/:startYear/:endYear", (req, res) => {
   const startYear = parseInt(req.params.startYear);

@@ -59,6 +59,35 @@ router.get("/author/:name", (req, res) => {
   return res.send(response);
 });
 
+// Creamos la ruta para obtener paises por su nombre
+router.get("/country/:country", (req, res) => {
+
+  // Filtramos los autores cuyo país coincide con el que se envía en la petición
+  const author = data.dataLibrary.authors.filter((author) => {
+    return author.country.toLowerCase() === req.params.country.toLowerCase();
+  });
+
+  // Si no se encuentra ningún autor, devolvemos un error 404
+  if (author.length === 0) {
+    return res.status(404).send({ error: `No se encontró ningún autor nacido en ${req.params.country}` });
+  }
+
+  // Si se encuentra algún autor, creamos una respuesta que incluye el nombre del país y los nombres de los autores nacidos en ese país.
+  const response = {
+    country: req.params.country,
+   authors: author.map((author) => author.author),
+  };
+
+  // Registramos un mensaje en la consola
+  logger(`Get authors by country: ${req.params.name}`);
+
+  // Enviamos la respuesta al cliente
+  return res.send(response);
+});
+
+
+
+
 // Exportamos el objeto Router
 module.exports = router;
 
