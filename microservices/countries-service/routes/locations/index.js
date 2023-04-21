@@ -102,11 +102,11 @@ router.get("/distributedBooks/:capital", async (req, res) => {
   try {
     const booksResponse = await fetch(`http://books:4000/api/v2/books/distributedCountries/${country.name}`);
     const booksData = await booksResponse.json();
-    const books = booksData.data;
+   // const books = booksData;
 
     const response = {
       country: country.name,
-      books: books
+      books: booksData,
     };
 
     return res.send(response);
