@@ -63,27 +63,31 @@ router.get("/author/:id", async (req, res) => {
 });
 
 
-router.get("/distributedCountries/:country", (req, res) => {
-  const country = req.params.country;
+router.get("/distributedCountries/:countries", (req, res) => {
+ /* const country = req.params.country;
   // Filtramos los libros que tienen al país en su propiedad "distributedCountries"
   const books = data.dataLibrary.books.filter((book) =>
     book.distributedCountries.includes(country)
-  );
+  );*/
+  const selectedCountries = req.params.countries.split(",");
+  const filteredBooks= data.dataLibrary.books.filter(book => {
+    return selectedCountries.some(country => book.distributedCountries.includes(country));
+  });
   // Si no se encuentra ningún libro, devolvemos un error 404
-  if (books.length === 0) {
+  if ( filteredBooks.length === 0) {
     return res
       .status(404)
-      .send({ error: `No se encontró ningún libro distribuido en ${country}` });
+      .send({ error: `No se encontró ningún libro distribuido en ${selectedCountries}` });
   }
   // Si se encuentra algún libro, creamos una respuesta que incluye el nombre del país y la lista de libros
   const response = {
-    country: country,
-    books :books.map((book)=>({title:book.title}))
+    country: selectedCountries,
+    books :filteredBooks.map((book)=>({title:book.title}))
     
    // books: books
   };
   // Registramos un mensaje en la consola
-  logger(`Get books by country: ${country}`);
+  logger(`Get books by country: ${selectedCountries}`);
   // Enviamos la respuesta al cliente
   return res.send(response);
 });

@@ -59,6 +59,7 @@ router.get("/author/:name", (req, res) => {
   return res.send(response);
 });
 
+/*
 // Creamos la ruta para obtener paises por su nombre
 router.get("/country/:country", (req, res) => {
 
@@ -83,8 +84,22 @@ router.get("/country/:country", (req, res) => {
 
   // Enviamos la respuesta al cliente
   return res.send(response);
-});
+});*/
 
+router.get("/country/:countries", (req, res) => {
+  const selectedCountries = req.params.countries.split(",");
+  const filteredAuthors = data.dataLibrary.authors.filter(author => {
+    return selectedCountries.some(country => author.country.includes(country));
+  });
+  const response = {
+    service: "authors",
+    architecture: "microservices",
+    data: filteredAuthors,
+  };
+
+  // Enviamos la respuesta
+  return res.send(response);
+});
 
 
 

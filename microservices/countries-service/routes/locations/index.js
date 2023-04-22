@@ -30,12 +30,10 @@ router.get("/", (req, res) => {
 router.get("/country-by-capital", (req, res) => {
   const capital = req.query.capital; // Obtenemos el nombre de la capital de la consulta
   const country = Object.values(data.dataLibrary.countries).find((c) => c.capital === capital);
-
   // Si no se encuentra el país, devolvemos un error 404
   if (!country) {
     return res.status(404).send({ error: `No se encontró el país correspondiente a la capital ${capital}` });
   }
-
   // Si se encuentra el país, devolvemos el nombre del país
   const response = {
     country: country.name
@@ -79,20 +77,26 @@ router.get("/country-by-author", (req, res) => {
 });
 
 
-/*router.get("/distributedBooks/:capital", async (req, res) => {
-  const capital = req.params.capital;
+  router.get("/language/:codeCountry", (req, res) => {
+    const codeCountry = req.params.codeCountry;
+    const countries = [];
+  
+    for (const countryCode in data.dataLibrary.countries) {
+      const country = data.dataLibrary.countries[countryCode];
+      if (country.languages.includes(codeCountry)) {
+        countries.push(country);
+      }
+    }
+  
+    const response = {
+      countries: countries
+    };
+  
+    return res.json(response);
+  });
 
-  const country = Object.values(data.dataLibrary.countries).find(c => c.capital == capital);
-  const books = await fetch(`http://books:4000/api/v2/books/distributedCountries${country[0]}`)
-  const data = await response.json();
+  
 
-  const response = {
-    country: country.name,
-    books
-  }
-
-  return res.send(response);
-});*/
 
 router.get("/distributedBooks/:capital", async (req, res) => {
   const capital = req.params.capital;

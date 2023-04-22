@@ -51,6 +51,87 @@ router.get("/", async (req, res) => {
 });
 
 
+//listar países, donde se hable o se use el determinado lenguaje
+router.get('/language/:codeCountry', async (req, res) => {
+  try {
+    const jsonArray = [];
+    fs.createReadStream('./data/language-codes.csv')
+      .pipe(csv())
+      .on('data', (data) => jsonArray.push(data))
+      .on('end', async () => {
+        const response = await fetch(`http://countries:5000/api/v2/countries/language/${req.params.codeCountry}`);
+        const countries = await response.json();
+
+        const responseObject = {
+          data: countries
+        };
+
+        return res.send(responseObject);
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Internal server error');
+  }
+});
+
+
+
+router.get('/languageCodeCountry/:codeLanguage', (req, res) => {
+  const jsonArray = [];
+  
+  fs.createReadStream('./data/language-codes.csv')
+    .pipe(csv())
+    .on('data', (data) => jsonArray.push(data))
+    .on('end',async() => {
+  
+  const resultadoPaises = await fetch(`http://countries:5000/api/v2/countries/language/${req.params.codeLanguage}`);
+  const paises = await resultadoPaises.json();
+  const nameArray = paises.countries.map(obj => obj.name);
+
+  const resultadoAutores = await fetch(`http://authors:3000/api/v2/authors/country/${nameArray.join(',')}`);
+  const autores = await resultadoAutores.json();
+  
+
+  const response = {
+    data: autores
+  };
+  
+    // Enviamos la respuesta
+    return res.send(response);
+  });
+  
+});
+
+
+
+router.get('/distributedCountry/:codeLanguage', (req, res) => {
+  const jsonArray = [];
+  
+  fs.createReadStream('./data/language-codes.csv')
+    .pipe(csv())
+    .on('data', (data) => jsonArray.push(data))
+    .on('end',async() => {
+  
+  const resultadoPaises = await fetch(`http://countries:5000/api/v2/countries/language/${req.params.codeLanguage}`);
+  const paises = await resultadoPaises.json();
+  const nameArray = paises.countries.map(obj => obj.name);
+
+  const resultadoBooks = await fetch(`http://books:4000/api/v2/books/distributedCountries/${nameArray.join(',')}`);
+  const books = await resultadoBooks.json();
+  
+
+  const response = {
+    data: books
+  };
+  
+    // Enviamos la respuesta
+    return res.send(response);
+  });
+  
+});
+
+
+
 
 
 
